@@ -44,6 +44,14 @@ export const computerFoundations: Concept[] = [
         'Is a digital photograph data?',
         'Yes. It is information represented in a form a computer can process.',
       ],
+      [
+        'What is a computer?',
+        'A machine that processes represented data by following instructions.',
+      ],
+      [
+        'What is data in computing?',
+        'Information represented in a form a computer can store or process.',
+      ],
     ],
   },
   {
@@ -68,6 +76,8 @@ export const computerFoundations: Concept[] = [
         'Does installing software physically increase RAM capacity?',
         'No. RAM capacity depends on installed memory hardware.',
       ],
+      ['What is hardware?', 'The physical equipment in a computing system.'],
+      ['What is software?', 'Programs that direct a computer’s hardware.'],
     ],
   },
   {
@@ -93,6 +103,7 @@ export const computerFoundations: Concept[] = [
         'What does a jump instruction change?',
         'Where execution continues in the instruction sequence.',
       ],
+      ['What does the CPU do?', 'Executes machine instructions.'],
     ],
   },
   {
@@ -120,6 +131,8 @@ export const computerFoundations: Concept[] = [
       ['Does an SSD normally retain saved data without power?', 'Yes. It is persistent storage.'],
       ['What does saving an edited document do?', 'Writes its changes to persistent storage.'],
       ['Does more SSD capacity mean more RAM capacity?', 'No. They are separate resources.'],
+      ['What does RAM stand for?', 'Random access memory.'],
+      ['What is main RAM used for?', 'Holding instructions and data while programs run.'],
     ],
   },
   {
@@ -206,6 +219,8 @@ export const computerFoundations: Concept[] = [
         'Can two files in different directories have the same name?',
         'Yes. Their paths distinguish their locations.',
       ],
+      ['What is a file?', 'A named unit of stored information.'],
+      ['What does a directory organise?', 'Entries for files and other directories.'],
     ],
   },
   {

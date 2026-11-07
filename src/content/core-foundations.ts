@@ -77,7 +77,7 @@ export const coreFoundations: Concept[] = [
     summary: 'Retrieve an item by priority instead of arrival order.',
     explanation: [
       'A priority queue retrieves an item according to its priority. A min-priority queue returns a smallest-priority item first, even if it arrived later. Equal priorities need an explicit tie rule if arrival order matters.',
-      'A binary min-heap is a tree filled level by level from left to right, in which each parent is no larger than its children. Its root contains a minimum, but the entire structure is not sorted. A heap can be stored in an array; insertion and removing the minimum take O(log n) time.',
+      'A binary min-heap is a tree filled level by level from left to right, in which each parent is no larger than its children. Its root contains a minimum, but the entire structure is not sorted. Restoring heap order after insertion or removing the minimum takes O(log n) time. With a growing backing array, an occasional resize can take O(n); the insertion bound is O(log n) amortised over a sequence of operations.',
     ],
     example:
       'Insert priorities 7, 2, 5.\nA min-priority queue removes 2 first.\nAn ordinary FIFO queue would remove 7 first.',
@@ -96,7 +96,10 @@ export const coreFoundations: Concept[] = [
         'Is a binary heap a completely sorted sequence?',
         'No. Its parent-child ordering does not order every pair of elements.',
       ],
-      ['What is the insertion time of a binary heap with n items?', 'O(log n).'],
+      [
+        'Ignoring backing-array resizing, what is the insertion time of a binary heap with n items?',
+        'O(log n).',
+      ],
       [
         'Does a priority queue necessarily preserve arrival order among equal priorities?',
         'No. That requires a defined tie-breaking rule.',
@@ -182,10 +185,13 @@ export const coreFoundations: Concept[] = [
       },
     ],
     questions: [
-      ['What is a precondition?', 'A condition that must hold before an operation begins.'],
       [
-        'What is a postcondition?',
-        'A condition the operation promises when it finishes under its preconditions.',
+        'Which precondition prevents division by zero in divide(a, b)?',
+        'The divisor b must not be zero.',
+      ],
+      [
+        'A function promises a nonnegative count. Does returning -1 satisfy that postcondition?',
+        'No. A negative result violates the promised postcondition.',
       ],
       [
         'What is a loop invariant?',
@@ -252,6 +258,10 @@ export const coreFoundations: Concept[] = [
       [
         'Does an OS require a graphical desktop?',
         'No. An OS can be used through text interfaces or without an interactive desktop.',
+      ],
+      [
+        'What is an operating system?',
+        'System software that manages computer resources and provides services to programs.',
       ],
     ],
   },
@@ -662,6 +672,8 @@ export const additionalQuestions: Record<string, [string, string][]> = {
     ['What decimal value does hexadecimal A represent?', '10.'],
   ],
   'bits-bytes': [
+    ['What is a bit?', 'A binary digit with one of two states, conventionally 0 or 1.'],
+    ['What is a byte?', 'A group of eight bits.'],
     ['How many bits make one byte?', 'Eight bits.'],
     ['How many possible states does one bit have?', 'Two.'],
     ['How many bits are in three bytes?', '24 bits.'],
