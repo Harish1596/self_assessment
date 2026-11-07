@@ -1,0 +1,246 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`preserves the original question identities and meanings for saved assessments 1`] = `
+[
+  {
+    "answer": "Add the active place values: 8 + 2 = 10.",
+    "id": "binary-1",
+    "question": "How do you convert binary 1010 to decimal?",
+  },
+  {
+    "answer": "Each hexadecimal digit maps to four bits, making long binary values easier to read without losing information.",
+    "id": "binary-2",
+    "question": "Why is hexadecimal useful for representing binary data?",
+  },
+  {
+    "answer": "256 distinct patterns. If interpreted as unsigned integers, their values range from 0 through 255.",
+    "id": "bits-bytes-1",
+    "question": "How many distinct values can eight bits represent?",
+  },
+  {
+    "answer": "A byte contains eight bits, so one MB is eight Mbit. Use matching decimal or binary prefixes when converting.",
+    "id": "bits-bytes-2",
+    "question": "What is the difference between a megabyte and a megabit?",
+  },
+  {
+    "answer": "−128 through 127, using the formula −2⁷ through 2⁷ − 1.",
+    "id": "integers-1",
+    "question": "What is the range of an 8-bit signed two’s-complement integer?",
+  },
+  {
+    "answer": "No. Behaviour depends on the language, numeric type, and operation. Check the relevant specification rather than assuming wraparound.",
+    "id": "integers-2",
+    "question": "Does integer overflow behave identically in every language?",
+  },
+  {
+    "answer": "Unicode defines code points; UTF-8 is a variable-length encoding that stores Unicode scalar values as one to four bytes.",
+    "id": "encoding-1",
+    "question": "How are Unicode and UTF-8 different?",
+  },
+  {
+    "answer": "Some code points require multiple bytes, and one visible character may combine multiple code points.",
+    "id": "encoding-2",
+    "question": "Why can a string’s byte length differ from its visible length?",
+  },
+  {
+    "answer": "Its layout allows an element’s location to be calculated from the start address, index, and element size, without walking earlier elements.",
+    "id": "arrays-lists-1",
+    "question": "Why can an array access an element by index in constant time?",
+  },
+  {
+    "answer": "The pointer update can be O(1), but finding the insertion position may first require O(n) traversal.",
+    "id": "arrays-lists-2",
+    "question": "Is inserting into a linked list always constant time?",
+  },
+  {
+    "answer": "A stack is LIFO: newest first. A queue is FIFO: oldest first.",
+    "id": "stacks-queues-1",
+    "question": "How does removal order differ between a stack and a queue?",
+  },
+  {
+    "answer": "A queue, because tasks are removed in the order they were added.",
+    "id": "stacks-queues-2",
+    "question": "Which structure fits a normal first-come, first-served task list?",
+  },
+  {
+    "answer": "Two distinct keys map to the same hash value or table location. The table needs a strategy to distinguish and store them.",
+    "id": "hash-tables-1",
+    "question": "What is a hash collision?",
+  },
+  {
+    "answer": "No. They are typically expected O(1) under suitable assumptions. Collisions and implementation details can produce worse cases.",
+    "id": "hash-tables-2",
+    "question": "Are hash-table lookups guaranteed to be O(1)?",
+  },
+  {
+    "answer": "It is connected and contains no cycles. A tree with n vertices has n − 1 edges.",
+    "id": "trees-graphs-1",
+    "question": "What makes an undirected graph a tree?",
+  },
+  {
+    "answer": "Without balancing its height may grow linearly, making search O(n). Balanced variants maintain logarithmic height.",
+    "id": "trees-graphs-2",
+    "question": "Why does a binary search tree need balancing?",
+  },
+  {
+    "answer": "The work is asymptotically bounded by a constant multiple of input size n, after some threshold. It does not give an exact runtime.",
+    "id": "complexity-1",
+    "question": "What does O(n) time tell you?",
+  },
+  {
+    "answer": "No. Their costs add: O(n) + O(n) = O(n). Nested full loops usually multiply to O(n²).",
+    "id": "complexity-2",
+    "question": "Do two consecutive loops over n elements imply O(n²)?",
+  },
+  {
+    "answer": "The elements must be ordered consistently with the comparison used by the search.",
+    "id": "search-1",
+    "question": "What precondition does binary search require on an array?",
+  },
+  {
+    "answer": "Linear search is O(n). Binary search on a sorted array is O(log n).",
+    "id": "search-2",
+    "question": "What are the worst-case time costs of linear and binary search on arrays?",
+  },
+  {
+    "answer": "It preserves the relative order of items with equal sort keys.",
+    "id": "sorting-1",
+    "question": "What is a stable sorting algorithm?",
+  },
+  {
+    "answer": "O(n log n) time and O(n) auxiliary storage for the merge buffer, with recursion overhead as well.",
+    "id": "sorting-2",
+    "question": "What is the usual time and extra-space cost of array merge sort?",
+  },
+  {
+    "answer": "A reachable base case and recursive steps that progress toward it.",
+    "id": "recursion-1",
+    "question": "What two ingredients make a recursive definition terminate?",
+  },
+  {
+    "answer": "Up to n calls can remain active, each retaining a stack frame and local state.",
+    "id": "recursion-2",
+    "question": "Why can a recursive function use O(n) memory without building a list?",
+  },
+  {
+    "answer": "A program is stored instructions and data. A process is an executing instance with runtime state and operating-system resources.",
+    "id": "processes-1",
+    "question": "How does a process differ from a program?",
+  },
+  {
+    "answer": "The address space and resources such as open files. Each thread retains its own stack, registers, and execution position.",
+    "id": "processes-2",
+    "question": "What do threads in the same process typically share?",
+  },
+  {
+    "answer": "Their address spaces can map that address to different physical memory, with isolation enforced by the OS and hardware.",
+    "id": "memory-1",
+    "question": "Why can two processes use the same virtual address safely?",
+  },
+  {
+    "answer": "No. Some faults allocate a new page or handle permissions/copy-on-write; invalid accesses may fail. Disk access is only one possibility.",
+    "id": "memory-2",
+    "question": "Does every page fault require reading from disk?",
+  },
+  {
+    "answer": "Yes. The scheduler can interleave them. Parallel execution requires simultaneous execution resources.",
+    "id": "concurrency-1",
+    "question": "Can concurrent tasks run on a single CPU core?",
+  },
+  {
+    "answer": "Both workers can read the same old value and overwrite each other’s updates. Synchronisation or an appropriate atomic operation is needed.",
+    "id": "concurrency-2",
+    "question": "How can two counter increments produce only one increase?",
+  },
+  {
+    "answer": "No. Data may still be buffered. Durability requires the appropriate OS and filesystem guarantees and synchronisation steps.",
+    "id": "files-1",
+    "question": "Does a successful file write always mean the data survives a power loss?",
+  },
+  {
+    "answer": "Open handles consume finite resources; closing releases them and can surface or complete buffered I/O operations, though closing alone is not a universal durability guarantee.",
+    "id": "files-2",
+    "question": "Why should a program close files reliably?",
+  },
+  {
+    "answer": "It resolves the hostname to relevant records, typically including an IP address used to reach the service.",
+    "id": "dns-1",
+    "question": "What does DNS do when you visit a website?",
+  },
+  {
+    "answer": "Resolvers and clients can cache previous answers until their applicable cache lifetimes expire.",
+    "id": "dns-2",
+    "question": "Why might a DNS change not be visible to every client immediately?",
+  },
+  {
+    "answer": "A reliable, ordered byte stream with retransmission and flow/congestion control. UDP provides datagrams without those delivery guarantees.",
+    "id": "tcp-udp-1",
+    "question": "What does TCP provide that UDP does not provide by itself?",
+  },
+  {
+    "answer": "No. It is a byte stream. Applications need a framing protocol to identify messages.",
+    "id": "tcp-udp-2",
+    "question": "Does TCP preserve the boundaries between application writes?",
+  },
+  {
+    "answer": "The outcome category and specific result of handling a request, such as 200 success, 404 not found, or 500 server error.",
+    "id": "http-1",
+    "question": "What does an HTTP response status code communicate?",
+  },
+  {
+    "answer": "The application carries an identifier, often in a cookie or token, and uses it to retrieve or verify session state.",
+    "id": "http-2",
+    "question": "How can login sessions exist if HTTP is stateless?",
+  },
+  {
+    "answer": "Transport confidentiality, integrity, and server authentication. Client certificate authentication is also possible but not typical for ordinary browsing.",
+    "id": "tls-1",
+    "question": "What core protections does properly verified TLS provide?",
+  },
+  {
+    "answer": "No. An encrypted connection can still carry unauthorised requests. The application must independently enforce permissions.",
+    "id": "tls-2",
+    "question": "Does HTTPS guarantee that an application has correct access control?",
+  },
+  {
+    "answer": "A primary key uniquely and non-nullably identifies a row. A foreign key constrains values to reference an eligible key in a related table.",
+    "id": "relational-1",
+    "question": "How does a primary key differ from a foreign key?",
+  },
+  {
+    "answer": "Database constraints protect integrity across all writers, including concurrent operations and scripts outside the main application.",
+    "id": "relational-2",
+    "question": "Why enforce relationships in the database rather than only application code?",
+  },
+  {
+    "answer": "It provides a lookup path to matching rows, often avoiding a full table scan.",
+    "id": "indexes-1",
+    "question": "Why can an index speed up a selective query?",
+  },
+  {
+    "answer": "Indexes consume storage, slow or complicate writes, and may not help the workload. Choose them based on actual queries and execution plans.",
+    "id": "indexes-2",
+    "question": "Why not index every column?",
+  },
+  {
+    "answer": "Its changes commit as a unit, or do not commit. Other users should not see a partially committed transaction.",
+    "id": "transactions-1",
+    "question": "What does atomicity mean in a database transaction?",
+  },
+  {
+    "answer": "Atomicity, consistency, isolation, and durability. Isolation strength and durability behaviour depend on the system and configuration.",
+    "id": "transactions-2",
+    "question": "What are the four ACID properties?",
+  },
+  {
+    "answer": "A left join keeps unmatched rows from the left table and fills right-side columns with NULL. An inner join returns only matches.",
+    "id": "joins-1",
+    "question": "How does a left join differ from an inner join?",
+  },
+  {
+    "answer": "SQL treats ordinary equality with NULL as unknown, so it does not identify null values as true. IS NULL explicitly tests for them.",
+    "id": "joins-2",
+    "question": "Why should you write IS NULL instead of = NULL?",
+  },
+]
+`;

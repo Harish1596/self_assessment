@@ -12,7 +12,7 @@ import {
   RotateCcw,
   Shuffle,
 } from 'lucide-react';
-import { cards, concepts, fields, fieldById } from './data';
+import { cards, concepts, fields, fieldById, fieldCounts } from './data';
 import { buildSession } from './domain';
 import { FieldIcon } from './components';
 import type { Card, Concept, Progress, Rating, SessionConfig } from './types';
@@ -174,7 +174,7 @@ export default function Flashcards({
                     </span>
                     <span>
                       <strong>{f.name}</strong>
-                      <small>8 questions</small>
+                      <small>{fieldCounts[f.id].cards} questions</small>
                     </span>
                     <span className="selection-indicator">
                       {config.fields.includes(f.id) && <Check size={14} />}
@@ -205,7 +205,7 @@ export default function Flashcards({
                   <option value={5}>5 questions</option>
                   <option value={10}>10 questions</option>
                   <option value={20}>20 questions</option>
-                  <option value={48}>All available questions</option>
+                  <option value={cards.length}>All available questions</option>
                 </select>
               </label>
               <label className="weak-option">

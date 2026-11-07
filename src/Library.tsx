@@ -87,7 +87,9 @@ export default function Library({
         <span>
           <strong>{filtered.length}</strong> concepts
         </span>
-        <span>{filtered.length * 2} flashcards</span>
+        <span>
+          {filtered.reduce((sum, concept) => sum + concept.questions.length, 0)} flashcards
+        </span>
         <span>
           {fieldCount} {fieldCount === 1 ? 'field' : 'fields'}
         </span>

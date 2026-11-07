@@ -12,7 +12,7 @@ import {
   Play,
   X,
 } from 'lucide-react';
-import { concepts, fields } from './data';
+import { concepts, fields, fieldCounts } from './data';
 import { loadProgress, parseProgress, STORAGE_KEY } from './domain';
 import { FieldIcon, Reader } from './components';
 import Library from './Library';
@@ -178,7 +178,7 @@ export default function App() {
               >
                 <FieldIcon field={f.id} size={18} />
                 {f.name}
-                <span>4</span>
+                <span>{fieldCounts[f.id].concepts}</span>
               </button>
             ))}
           </nav>

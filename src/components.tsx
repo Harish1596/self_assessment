@@ -10,6 +10,11 @@ import {
   Monitor,
   Network,
   Binary,
+  Cpu,
+  Sigma,
+  Braces,
+  Wrench,
+  ShieldCheck,
   X,
   ExternalLink,
 } from 'lucide-react';
@@ -17,6 +22,11 @@ import { cards, fieldById } from './data';
 import type { Concept, FieldId, Progress } from './types';
 
 const icons = {
+  computing: Cpu,
+  logic: Sigma,
+  programming: Braces,
+  engineering: Wrench,
+  security: ShieldCheck,
   representation: Binary,
   structures: Layers,
   algorithms: Code2,
