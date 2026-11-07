@@ -78,6 +78,16 @@ are safe; conflicting edits from another tab require reloading saved state. Navi
 Answers lock after reveal. Completed and ended sessions stay in history, with
 snapshots of their original cards even if the library changes later.
 
+Session answers are retained so you can review earlier attempts alongside newer
+attempts at the same question and assess how your understanding has progressed.
+Each attempt keeps its written answer, selected choices, timestamps, self-rating
+and the card revision used in that session. Answering a question again updates
+its latest rating without overwriting earlier session answers.
+
+You can currently open individual historical sessions to review their answers.
+A dedicated side-by-side comparison of past and current attempts is planned;
+it is not yet implemented. Written-answer progress remains self-assessed.
+
 The sidebar Export/Import buttons handle version-1 **progress only** (read state
 and latest ratings), retaining compatibility with older backups. They do not
 back up content or session answers. Import confirms replacement of latest
