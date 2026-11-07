@@ -18,7 +18,11 @@ export function buildSession(
   config: SessionConfig,
   progress: Progress,
   random = Math.random,
-  catalogue = { cards, concepts, fields },
+  catalogue: { cards: Card[]; concepts: { id: string }[]; fields: { id: string }[] } = {
+    cards,
+    concepts,
+    fields,
+  },
 ): { cards: Card[]; fields: FieldId[] } {
   const { cards, fields } = catalogue;
   if (!['single', 'multiple', 'random'].includes(config.mode))
@@ -80,7 +84,10 @@ export function buildSession(
   };
 }
 
-export function parseProgress(raw: string, catalogue = { cards, concepts }): Progress {
+export function parseProgress(
+  raw: string,
+  catalogue: { cards: { id: string }[]; concepts: { id: string }[] } = { cards, concepts },
+): Progress {
   const { cards, concepts } = catalogue;
   const fail = (): never => {
     throw new Error(

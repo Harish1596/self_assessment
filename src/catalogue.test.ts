@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { cards, concepts, fields, fieldCounts } from './data';
+import { cards, concepts, fields, fieldCounts } from './seed-data';
 import { initialConcepts } from './content/initial';
 import { parseProgress } from './domain';
 
@@ -61,7 +61,7 @@ it('accepts backups created before the catalogue expansion', () => {
       'processes-2': { rating: 'partial', reviewedAt: '2026-11-07T00:00:00.000Z', reviews: 1 },
     },
   };
-  expect(parseProgress(JSON.stringify(backup))).toEqual(backup);
+  expect(parseProgress(JSON.stringify(backup), { cards, concepts })).toEqual(backup);
 });
 
 it('expands original concepts without changing their existing question positions', () => {

@@ -1,6 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import { buildSession, parseProgress, emptyProgress, shuffle } from './domain';
-import { cards, concepts, fields } from './data';
+import { cards, concepts, fields } from './seed-data';
+import { installCatalogue } from './data';
+installCatalogue({
+  fields,
+  concepts,
+  cards: cards.map((c) => ({
+    ...c,
+    revisionId: 'test',
+    revision: 1,
+    kind: 'recall',
+    answers: [c.answer],
+    choices: [],
+  })),
+});
 
 describe('session selection', () => {
   it('restricts single-field sessions and never duplicates questions', () => {

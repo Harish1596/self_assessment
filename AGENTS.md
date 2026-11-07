@@ -12,6 +12,7 @@ before changing the architecture.
 - File responsibilities: [Structure](README.md#structure).
 - Persistence and temporary state: [Your data](README.md#your-data).
 - Assessment behaviour: [Included](README.md#included).
+- Backend contracts, migrations and session storage: [Database](docs/database-architecture.md).
 - Initial design and visual direction: [Design](docs/design.md).
 
 Read the relevant sections before changing that area; do not load every linked
@@ -27,7 +28,8 @@ file for unrelated tasks. Keep detailed guidance in those documents, not here.
   and active assessment state when opening explanations.
 - Save ratings immediately. Validate imports before use, confirm replacement,
   preserve existing data on invalid imports and surface storage failures.
-- Keep selection/validation in `src/domain.ts`; edit sources, not `dist/`.
+- Keep selection/progress validation in `src/domain.ts` and answer validation in
+  `shared/validation.ts`; edit sources, not `dist/`.
 - Preserve the existing visual system, responsive layouts, keyboard/focus access
   and reduced-motion support. Bundle reading assets locally.
 - When expanding content, update inventory assertions and documented counts;

@@ -1,4 +1,4 @@
-import { cards, concepts, fields } from '../src/data';
+import { cards, concepts, fields } from '../src/seed-data';
 import { connectDatabase, migrate } from './db';
 import { importCatalogue } from './catalogue';
 const db = connectDatabase(

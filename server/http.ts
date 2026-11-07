@@ -29,6 +29,7 @@ export function createApi(db: Database) {
           'http://127.0.0.1:5173',
           'http://localhost:5173',
           'http://127.0.0.1:4173',
+          process.env.RECALL_WEB_ORIGIN,
         ].includes(req.headers.origin)
       ) {
         res.statusCode = 403;

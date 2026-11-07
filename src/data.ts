@@ -1,43 +1,23 @@
-import type { Card, Concept, FieldId } from './types';
-import { initialConcepts } from './content/initial';
-import { allFields } from './content/fields';
-import { computerFoundations } from './content/computer-foundations';
-import { programmingFoundations } from './content/programming-foundations';
-import { coreFoundations, additionalQuestions } from './content/core-foundations';
+import type { Catalogue, Field, StoredCard } from '../shared/contracts';
+import type { Concept } from './types';
 
-const fieldOrder = new Map(allFields.map((field, index) => [field.id, index]));
-export const concepts: Concept[] = [
-  ...initialConcepts.map((concept) => ({
-    ...concept,
-    // Append only: the original positions are part of saved question identities.
-    questions: [...concept.questions, ...(additionalQuestions[concept.id] ?? [])],
-  })),
-  ...computerFoundations,
-  ...programmingFoundations,
-  ...coreFoundations,
-].sort((a, b) => fieldOrder.get(a.field)! - fieldOrder.get(b.field)!);
-export const fields = allFields.filter((field) =>
-  concepts.some((concept) => concept.field === field.id),
-);
-export const cards: Card[] = concepts.flatMap((concept) =>
-  concept.questions.map(([question, answer], i) => ({
-    id: `${concept.id}-${i + 1}`,
-    conceptId: concept.id,
-    field: concept.field,
-    question,
-    answer,
-  })),
-);
-export const fieldById = Object.fromEntries(fields.map((f) => [f.id, f])) as Record<
-  FieldId,
-  (typeof fields)[number]
->;
-export const fieldCounts = Object.fromEntries(
-  fields.map((field) => [
-    field.id,
-    {
-      concepts: concepts.filter((concept) => concept.field === field.id).length,
-      cards: cards.filter((card) => card.field === field.id).length,
-    },
-  ]),
-) as Record<FieldId, { concepts: number; cards: number }>;
+// Installed once before mounting the application. Content lives in PostgreSQL;
+// seed-data.ts is used only by the explicit seed command and integrity tests.
+export let fields: Field[] = [];
+export let concepts: Concept[] = [];
+export let cards: StoredCard[] = [];
+export let fieldById: Record<string, Field> = {};
+export let fieldCounts: Record<string, { concepts: number; cards: number }> = {};
+export function installCatalogue(catalogue: Catalogue) {
+  ({ fields, concepts, cards } = catalogue);
+  fieldById = Object.fromEntries(fields.map((f) => [f.id, f]));
+  fieldCounts = Object.fromEntries(
+    fields.map((f) => [
+      f.id,
+      {
+        concepts: concepts.filter((c) => c.field === f.id).length,
+        cards: cards.filter((c) => c.field === f.id).length,
+      },
+    ]),
+  );
+}
