@@ -1124,9 +1124,11 @@ select {
 .session-progress > span {
   display: block;
   background: #4e8968;
+  width: 100%;
   height: 100%;
   border-radius: 10px;
-  transition: width 0.2s;
+  transform-origin: left center;
+  transition: transform 0.2s;
 }
 .progress-detail {
   display: flex;

@@ -247,7 +247,7 @@ export default function Flashcards({
             </div>
             <p>questions assessed</p>
             <div className="thin-progress">
-              <span style={{ width: `${(reviewed.length / cards.length) * 100}%` }} />
+              <span style={{ transform: `scaleX(${reviewed.length / cards.length})` }} />
             </div>
             <div className="progress-detail">
               <span>
@@ -364,7 +364,7 @@ export default function Flashcards({
         className="session-progress"
         aria-label={`Session ${session.index} of ${session.cards.length} completed`}
       >
-        <span style={{ width: `${(session.index / session.cards.length) * 100}%` }} />
+        <span style={{ transform: `scaleX(${session.index / session.cards.length})` }} />
       </div>
       <div className="session-field-summary">
         Your fields: {activeFields.map((f) => fieldById[f].name).join(' · ')}
