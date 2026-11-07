@@ -1,20 +1,28 @@
 # Recall
 
-A personal computer science knowledge library with source references and self-assessed flashcards. Built with React, TypeScript, Vite, a local Node.js API and PostgreSQL. No account or API key required.
-
 ## Run locally
 
 Use Node.js 22.19+ and Docker Desktop. Start Docker before the database commands.
+
+### First-time setup
 
 ```sh
 npm ci
 cp .env.example .env
 npm run db:start
 npm run db:seed
+```
+
+### Start the app
+
+Start the database and API in one terminal:
+
+```sh
+npm run db:start
 npm run dev:api
 ```
 
-In a second terminal:
+Start the web app in a second terminal:
 
 ```sh
 npm run dev
@@ -28,9 +36,20 @@ when running Vite (for example `http://127.0.0.1:3005`).
 
 `db:seed` applies versioned migrations and imports the bundled foundation content
 once. Repeating it does not reset progress or overwrite existing seeded content.
-The API also applies pending migrations at startup. Docker stores data in the
-`recall_recall_postgres` named volume. `docker compose stop db` preserves it.
-Deleting that volume removes the database.
+The API also applies pending migrations at startup.
+
+### Stop the app
+
+Press Ctrl+C in each terminal to stop the web app and API. Stop the database with:
+
+```sh
+docker compose stop db
+```
+
+Docker stores data in the `recall_recall_postgres` named volume. Stopping the
+service preserves it; deleting the volume removes the database.
+
+### Build, preview and test
 
 ```sh
 npm test          # Domain, content, validation, PostgreSQL repositories and HTTP
@@ -51,16 +70,77 @@ The API and database bind to loopback for personal use. Public hosting, accounts
 and cross-device sync are outside the current scope. A database failure produces
 an error; there is no silent fallback to temporary browser-only saves.
 
+Text and fonts are bundled locally, and normal use does not call external AI or
+content services. Source links open external websites. Keep the local web server,
+API and database running to use Recall; this is not an installable offline PWA.
+
 ## Included
 
-- 87 introductory concepts and 438 questions across 11 fields, starting with what a computer does and how programs work.
-- A searchable library with field and read/unread filters, worked examples, important caveats, source links and related questions.
-- Single-field, multiple-field and randomly selected-field assessments. Questions are shuffled without repetition; short pools use only the available questions. Mixed sessions include one question per selected field when the session length and available pool permit.
-- Answer reveal, saved written responses, three self-assessment ratings, session results and retrying questions that need revision.
-- Written recall with one or several accepted answers, single-choice and multiple-correct-choice cards. Choice grading uses the exact correct set; written answers remain self-assessed. The existing foundation bank contains written-recall cards.
-- Database-backed read progress, latest ratings and complete session records: card order/revisions, written answers, selected choices, reveal state, timestamps and active/paused/completed/abandoned status.
-- Session history with resume after reload, pause/resume and review of previous answers. Opening an explanation or the library preserves practice state.
-- JSON export/import of latest progress, with validation and confirmation before replacement. Historical sessions remain intact. Existing browser progress migrates automatically without deleting its original copy.
+A personal computer science knowledge library with source references and self-assessed flashcards. Built with React, TypeScript, Vite, a local Node.js API and PostgreSQL. No account or API key required.
+
+### Knowledge library
+
+Browse or search explanations, worked examples, caveats, source links and related
+questions. Filter by field or reading status, and mark concepts as read as you
+learn. The initial library covers 87 concepts and 438 questions across 11 fields.
+
+### Flashcard practice
+
+Choose one field, multiple fields or randomly selected fields, then choose a
+session length. Questions are shuffled without repetition. Shorter pools use all
+available questions; mixed sessions cover each selected field when the length
+and available pool permit.
+
+Write your answer or select options before revealing the accepted answer. Then
+rate your understanding as Needs practice, Partly understood or Confident. You
+can retry questions that need revision or build a session from weaker questions.
+
+The system supports written recall with one or several accepted answers,
+single-choice questions and questions with multiple correct choices. Selectable
+questions require the exact correct set; written answers remain self-assessed.
+The existing foundation bank contains written-recall cards.
+
+### Saved sessions and progress
+
+Written answers, selected choices, reveal state, ratings and timestamps are saved
+with each session. Pause and resume practice, resume after a reload, or open
+historical sessions to review previous answers. Opening an explanation or the
+library preserves practice state.
+
+Earlier answers remain available when you attempt the same question again, so
+you can review how your understanding changes over time. A dedicated side-by-side
+comparison of past and current attempts is planned and is not yet implemented.
+
+Progress export/import covers reading status and latest ratings, with validation
+and confirmation before replacement. Historical sessions remain intact. Existing
+browser progress migrates automatically without deleting its original copy.
+See [Your data](#your-data) for persistence and full database backups.
+
+## Content
+
+The bank is intended for engineering foundations regardless of experience level. It includes definitions, distinctions, small examples and common misconceptions. Difficulty tiers remain deferred.
+
+| Field                | Concepts | Questions |
+| -------------------- | -------: | --------: |
+| Computer basics      |        8 |        50 |
+| Data representation  |        7 |        37 |
+| Logic & mathematics  |        7 |        35 |
+| Programming basics   |       12 |        60 |
+| Data structures      |        7 |        33 |
+| Algorithms           |        8 |        38 |
+| Operating systems    |        9 |        41 |
+| Networking           |        8 |        38 |
+| Databases            |        9 |        44 |
+| Software engineering |        6 |        32 |
+| Security basics      |        6 |        30 |
+
+The notes are original introductory summaries, not verbatim reproductions or a live scraping feed. Source links were checked on 7 November 2026. Ratings are self-assessments, not automated grading or proof of mastery. Difficulty levels and language/framework-specific collections are intentionally deferred.
+
+### Maintaining the content
+
+`src/seed-data.ts` assembles the initial catalogue from `src/content/` for explicit database seeding and integrity tests. The browser loads its catalogue from the API via `src/data.ts`. Field metadata lives in `fields.ts`; `initial.ts` retains the original entries; the computer, programming and core foundations modules hold the expansion. Each entry includes a stable ID, field, title, summary, explanation, example, takeaway, sources and a variable number of focused question/answer pairs. Initial cards are derived from the entries so they stay linked to their explanations. New structured catalogues can be merged through `POST /api/catalogue`; see [database architecture](docs/database-architecture.md). Fields are database records, so adding a field requires no TypeScript enum change. A future Markdown processor can target this import contract. Content imports are currently available through the API, without a dedicated editor UI.
+
+Keep IDs stable to preserve saved history. Question IDs depend on their position within an entry: append questions rather than reordering or repurposing existing ones. The original 48 questions retain their IDs and meanings; earlier progress backups remain compatible. Tests check integrity across every entry, coverage of the foundation fields, data-driven counts and a snapshot of the original questions. Update documented inventory totals when expanding content; the current totals are not limits.
 
 ## Your data
 
@@ -109,34 +189,6 @@ docker compose exec -T db pg_restore -l < recall-full.dump
 
 Restoring a database is a separate operation: target a new database first and
 verify it before replacing existing data. No automatic restore or sync is included.
-
-Text and fonts are bundled locally, and normal use does not call external AI or
-content services. Source links open external websites. Keep the local web server,
-API and database running to use Recall; this is not an installable offline PWA.
-
-## Content
-
-`src/seed-data.ts` assembles the initial catalogue from `src/content/` for explicit database seeding and integrity tests. The browser loads its catalogue from the API via `src/data.ts`. Field metadata lives in `fields.ts`; `initial.ts` retains the original entries; the computer, programming and core foundations modules hold the expansion. Each entry includes a stable ID, field, title, summary, explanation, example, takeaway, sources and a variable number of focused question/answer pairs. Initial cards are derived from the entries so they stay linked to their explanations. New structured catalogues can be merged through `POST /api/catalogue`; see [database architecture](docs/database-architecture.md). Fields are database records, so adding a field requires no TypeScript enum change. A future Markdown processor can target this import contract. Content imports are currently available through the API, without a dedicated editor UI.
-
-Keep IDs stable to preserve saved history. Question IDs depend on their position within an entry: append questions rather than reordering or repurposing existing ones. The original 48 questions retain their IDs and meanings; earlier progress backups remain compatible. Tests check integrity across every entry, coverage of the foundation fields, data-driven counts and a snapshot of the original questions. Update documented inventory totals when expanding content; the current totals are not limits.
-
-The bank is intended for engineering foundations regardless of experience level. It includes definitions, distinctions, small examples and common misconceptions. Difficulty tiers remain deferred.
-
-| Field                | Concepts | Questions |
-| -------------------- | -------: | --------: |
-| Computer basics      |        8 |        50 |
-| Data representation  |        7 |        37 |
-| Logic & mathematics  |        7 |        35 |
-| Programming basics   |       12 |        60 |
-| Data structures      |        7 |        33 |
-| Algorithms           |        8 |        38 |
-| Operating systems    |        9 |        41 |
-| Networking           |        8 |        38 |
-| Databases            |        9 |        44 |
-| Software engineering |        6 |        32 |
-| Security basics      |        6 |        30 |
-
-The notes are original introductory summaries, not verbatim reproductions or a live scraping feed. Source links were checked on 7 November 2026. Ratings are self-assessments, not automated grading or proof of mastery. Difficulty levels and language/framework-specific collections are intentionally deferred.
 
 ## Structure
 
