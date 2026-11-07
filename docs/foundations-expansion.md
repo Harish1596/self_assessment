@@ -45,3 +45,17 @@ references are provenance, not instructions. Inventory checks reflect actual
 coverage, while integrity checks cover every entry rather than pinning two
 questions per entry. Normal reading and practice remain local and free of API
 dependencies.
+
+## Completed
+
+The integrated catalogue contains 87 concepts and 438 questions in 11 fields.
+The original 48 cards retain their IDs and meanings; extra questions follow the
+original pairs. The library begins with computer basics, and counts and full-field
+sessions are derived from the actual question bank.
+
+Domain tests cover all content, field coverage, source structure, question identity
+snapshots and old-backup compatibility. Browser coverage includes new basic-field
+reading, source links, variable-length question counts, full-field sessions,
+existing field modes, backup import/export, keyboard use and mobile layouts.
+Independent content review led to clearer breakpoint/MFA explanations, qualified
+heap complexity and application questions instead of repeated contract definitions.

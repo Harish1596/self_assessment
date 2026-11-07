@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { cards, concepts, fields, fieldCounts } from '../src/data';
 
 test('library search, sourced reader, read state and refresh persistence', async ({ page }) => {
   const errors: string[] = [];
@@ -6,7 +7,7 @@ test('library search, sourced reader, read state and refresh persistence', async
   await page.goto('/');
   await expect(page).toHaveTitle('Recall — Computer science foundations');
   await expect(page.getByRole('heading', { name: 'A stronger foundation.' })).toBeVisible();
-  await expect(page.locator('.concept-row')).toHaveCount(24);
+  await expect(page.locator('.concept-row')).toHaveCount(concepts.length);
   await page.screenshot({ path: '/private/tmp/recall-desktop.png', fullPage: false });
   await page.getByRole('textbox', { name: 'Search knowledge library' }).fill('binary');
   await expect(page.getByRole('button', { name: /Binary & hexadecimal/ })).toBeVisible();
@@ -22,13 +23,13 @@ test('library search, sourced reader, read state and refresh persistence', async
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
   await page.reload();
-  await expect(page.getByText('1 of 24 read')).toBeVisible();
+  await expect(page.getByText(`1 of ${concepts.length} read`)).toBeVisible();
   await page.getByRole('textbox', { name: 'Search knowledge library' }).fill('zzzznotfound');
   await expect(page.getByRole('heading', { name: 'No matching concepts' })).toBeVisible();
   await page.getByRole('button', { name: 'Clear filters' }).click();
-  await expect(page.locator('.concept-row')).toHaveCount(24);
+  await expect(page.locator('.concept-row')).toHaveCount(concepts.length);
   await page.getByRole('combobox', { name: 'Filter library by field' }).selectOption('systems');
-  await expect(page.locator('.concept-row')).toHaveCount(4);
+  await expect(page.locator('.concept-row')).toHaveCount(fieldCounts.systems.concepts);
   expect(errors).toEqual([]);
 });
 
@@ -89,8 +90,12 @@ test('multiple and random fields work, invalid backup preserves data and valid b
 }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Practice flashcards', exact: true }).click();
-  for (const name of ['Data representation', 'Data structures', 'Operating systems', 'Networking'])
-    await page.getByRole('checkbox', { name: new RegExp(name) }).uncheck();
+  for (const field of fields.filter((field) => !['algorithms', 'databases'].includes(field.id)))
+    await page
+      .getByRole('checkbox', {
+        name: new RegExp(field.name),
+      })
+      .uncheck();
   await page.getByRole('button', { name: 'Start session', exact: true }).click();
   const selectedFields = (await page.locator('.session-field-summary').innerText())
     .replace('Your fields: ', '')
@@ -167,4 +172,36 @@ test('mobile layout, keyboard entry, and unavailable browser storage remain usab
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: '/private/tmp/recall-mobile-card.png', fullPage: false });
   expect(errors).toEqual([]);
+});
+
+test('absolute basics are browsable and full-field sessions use the actual question bank', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('combobox', { name: 'Filter library by field' }).selectOption('computing');
+  await expect(page.locator('.concept-row')).toHaveCount(fieldCounts.computing.concepts);
+  await expect(page.locator('.library-meta')).toContainText(
+    `${fieldCounts.computing.cards} flashcards`,
+  );
+  const firstConcept = concepts.find((concept) => concept.field === 'computing')!;
+  await page.locator('.concept-row').first().click();
+  await expect(
+    page.getByRole('dialog').getByRole('heading', { name: firstConcept.title }),
+  ).toBeVisible();
+  await expect(page.getByRole('dialog').locator('.sources a').first()).toHaveAttribute(
+    'href',
+    firstConcept.sources[0].url,
+  );
+  await page.getByRole('button', { name: 'Practise this field' }).click();
+  await expect(page.getByRole('radio', { name: /Single field/ })).toBeChecked();
+  await page.getByRole('combobox', { name: 'Session length' }).selectOption(String(cards.length));
+  await page.getByRole('button', { name: 'Start session', exact: true }).click();
+  await expect(
+    page.getByText(`Question 1 of ${fieldCounts.computing.cards}`, { exact: true }),
+  ).toBeVisible();
+  await expect(page.locator('.session-field-summary')).toHaveText('Your fields: Computer basics');
+  await page.screenshot({
+    path: '/private/tmp/recall-computing-fundamentals.png',
+    fullPage: false,
+  });
 });

@@ -48,7 +48,7 @@ export default function Library({
           .includes(needle)),
   );
   const reviewed = Object.keys(progress.ratings).length;
-  const fieldCount = field === 'all' ? fields.length : 1;
+  const fieldCount = new Set(filtered.map((concept) => concept.field)).size;
   return (
     <>
       <div className="page-heading">

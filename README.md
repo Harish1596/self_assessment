@@ -24,7 +24,7 @@ Browser tests use installed Google Chrome (`channel: 'chrome'` in `playwright.co
 
 ## Included
 
-- 24 introductory concepts and 48 questions across data representation, data structures, algorithms, operating systems, networking and databases.
+- 87 introductory concepts and 438 questions across 11 fields, starting with what a computer does and how programs work.
 - A searchable library with field and read/unread filters, worked examples, important caveats, source links and related questions.
 - Single-field, multiple-field and randomly selected-field assessments. Questions are shuffled without repetition; short pools use only the available questions. Mixed sessions include one question per selected field when the session length and available pool permit.
 - Answer reveal, optional scratch notes, three self-assessment ratings, session results and retrying questions that need revision.
@@ -41,12 +41,32 @@ Text and fonts ship with the app; normal reading and assessments do not fetch ex
 
 ## Content
 
-`src/data.ts` contains the fields and knowledge entries. Each entry includes a stable ID, field, title, summary, explanation, example, takeaway, sources and two question/answer pairs. Cards are derived from the entries so they stay linked to their explanations. Keep IDs stable to preserve saved history. The content-integrity tests currently pin the initial 24-entry/48-card inventory; update those assertions when adding entries.
+`src/data.ts` assembles the catalogue from `src/content/`. Field metadata lives in `fields.ts`; `initial.ts` retains the original entries; the computer, programming and core foundations modules hold the expansion. Each entry includes a stable ID, field, title, summary, explanation, example, takeaway, sources and a variable number of focused question/answer pairs. Cards are derived from the entries so they stay linked to their explanations.
+
+Keep IDs stable to preserve saved history. Question IDs depend on their position within an entry: append questions rather than reordering or repurposing existing ones. The original 48 questions retain their IDs and meanings; earlier progress backups remain compatible. Tests check integrity across every entry, coverage of the foundation fields, data-driven counts and a snapshot of the original questions. Update documented inventory totals when expanding content; the current totals are not limits.
+
+The bank is intended for engineering foundations regardless of experience level. It includes definitions, distinctions, small examples and common misconceptions. Difficulty tiers remain deferred.
+
+| Field                | Concepts | Questions |
+| -------------------- | -------: | --------: |
+| Computer basics      |        8 |        50 |
+| Data representation  |        7 |        37 |
+| Logic & mathematics  |        7 |        35 |
+| Programming basics   |       12 |        60 |
+| Data structures      |        7 |        33 |
+| Algorithms           |        8 |        38 |
+| Operating systems    |        9 |        41 |
+| Networking           |        8 |        38 |
+| Databases            |        9 |        44 |
+| Software engineering |        6 |        32 |
+| Security basics      |        6 |        30 |
 
 The notes are original introductory summaries, not verbatim reproductions or a live scraping feed. Source links were checked on 7 November 2026. Ratings are self-assessments, not automated grading or proof of mastery. Difficulty levels and language/framework-specific collections are intentionally deferred.
 
 ## Structure
 
-`App.tsx` manages navigation and persistence; `Library.tsx` handles discovery; `components.tsx` provides the article reader; `Flashcards.tsx` provides setup, practice and results; `domain.ts` owns question selection and backup validation.
+`src/content/` owns teaching notes and question banks; `src/data.ts` derives the searchable catalogue and counts. `App.tsx` manages navigation and persistence; `Library.tsx` handles discovery; `components.tsx` provides the article reader; `Flashcards.tsx` provides setup, practice and results; `domain.ts` owns question selection and backup validation.
 
 The implementation scope is recorded in `docs/design.md` and `docs/plan.md`. The generated visual reference is in `docs/reference/recall-concept.png`.
+
+The clarified absolute-basics scope and expansion approach are recorded in `docs/foundations-expansion.md`.

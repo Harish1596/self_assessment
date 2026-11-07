@@ -95,16 +95,32 @@ describe('backups and content integrity', () => {
     expect(() => parseProgress(JSON.stringify(p))).toThrow();
     expect(() => parseProgress('{"version":1,"read":[],"ratings":{"__proto__":{}}}')).toThrow();
   });
-  it('provides 24 sourced entries and 48 linked basic questions across six fields', () => {
-    expect(fields).toHaveLength(6);
-    expect(concepts).toHaveLength(24);
-    expect(cards).toHaveLength(48);
-    expect(new Set(concepts.map((c) => c.id)).size).toBe(24);
-    expect(new Set(cards.map((c) => c.id)).size).toBe(48);
+  it('provides sourced entries and unique linked questions across the catalogue', () => {
+    const fieldIds = new Set(fields.map((field) => field.id));
+    expect(new Set(concepts.map((c) => c.id)).size).toBe(concepts.length);
+    expect(new Set(cards.map((c) => c.id)).size).toBe(cards.length);
+    for (const field of fields)
+      expect(concepts.some((concept) => concept.field === field.id)).toBe(true);
     for (const concept of concepts) {
+      expect(fieldIds.has(concept.field)).toBe(true);
       expect(concept.sources.length).toBeGreaterThan(0);
-      expect(concept.sources.every((s) => new URL(s.url).protocol === 'https:')).toBe(true);
-      expect(cards.filter((c) => c.conceptId === concept.id)).toHaveLength(2);
+      expect(
+        concept.sources.every((s) => s.title.trim() && new URL(s.url).protocol === 'https:'),
+      ).toBe(true);
+      expect(concept.explanation.length).toBeGreaterThan(0);
+      expect(concept.explanation.every((paragraph) => paragraph.trim().length > 0)).toBe(true);
+      expect(concept.example.trim()).not.toBe('');
+      expect(concept.takeaway.trim()).not.toBe('');
+      expect(concept.questions.length).toBeGreaterThan(0);
+      expect(
+        new Set(concept.questions.map(([question]) => question.trim().toLowerCase())).size,
+      ).toBe(concept.questions.length);
+      expect(
+        concept.questions.every(([question, answer]) => question.trim() && answer.trim()),
+      ).toBe(true);
+      expect(cards.filter((c) => c.conceptId === concept.id)).toHaveLength(
+        concept.questions.length,
+      );
     }
   });
 });
