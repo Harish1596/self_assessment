@@ -532,7 +532,7 @@ export const programmingFoundations: Concept[] = [
     summary: 'Use evidence to find why actual behavior differs from expected behavior.',
     explanation: [
       'Debugging investigates the cause of an observed failure and corrects it. Start with the expected outcome and a reproducible case. Reduce the case when possible so fewer details can explain the failure.',
-      'Inspect intermediate values using logs or a debugger. Form a hypothesis, change one relevant thing, and check the result. A regression test preserves the failing case so a later change is less likely to reintroduce the defect.',
+      'Inspect intermediate values using logs or a debugger. A breakpoint pauses execution at a chosen point so you can inspect program state. Form a hypothesis, change one relevant thing, and check the result. A regression test preserves the failing case so a later change is less likely to reintroduce the defect.',
     ],
     example:
       'A total is one item too small. Reproduce it with a two-item list, inspect the loop bounds, fix the skipped final item, and keep a test that expects both items in the total.',
@@ -675,7 +675,7 @@ export const programmingFoundations: Concept[] = [
     summary: 'Establish identity, then decide which actions are allowed.',
     explanation: [
       'Authentication checks a claimed identity, such as verifying login credentials. Authorization decides whether an identity is permitted to perform a particular action on a particular resource.',
-      'Being signed in does not imply permission to read every record. Permission checks must run where protected access is enforced, rather than relying only on which buttons the interface shows. Authentication can use multiple independent factors for stronger evidence of identity.',
+      'Being signed in does not imply permission to read every record. Permission checks must run where protected access is enforced, rather than relying only on which buttons the interface shows. Multifactor authentication combines independent factor categories, such as something you know (a password) and something you have (a security key), for stronger evidence of identity.',
     ],
     example:
       'A student signs in successfully but cannot edit another student’s grade. The login is authentication; the rule denying that edit is authorization.',
