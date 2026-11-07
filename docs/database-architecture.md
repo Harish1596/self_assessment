@@ -3,7 +3,7 @@
 ## Scope and decisions
 
 The user requested durable storage for an expanding library and all flashcard
-session answers/status. PostgreSQL is the proposed database. Multiple acceptable
+session answers/status. PostgreSQL is the database. Multiple acceptable
 written answers and single-/multiple-correct selectable choices are independent
 of database choice; the model supports both. Existing content and card IDs must
 remain stable. This remains a personal, local application without public hosting
@@ -79,3 +79,37 @@ without deleting historical sessions. Legacy imports merge once per content hash
 grading, optimistic concurrency, idempotent ratings, lifecycle transitions and
 legacy imports. HTTP tests bind a temporary loopback port. PostgreSQL 17 Docker
 migration and repeat seeding were also exercised successfully.
+
+## Client integration and recovery
+
+The browser installs its catalogue before mounting the app; `src/seed-data.ts`
+is absent from the production browser bundle. Local legacy progress is imported
+idempotently without deleting the original data. Typed drafts stay in application
+state while browsing the library, save after 500 ms, and are included in reveal
+requests. Save acknowledgements control the visible saved status. Responses lock
+after reveal; ratings commit before advancing to the next item. API requests have
+a 15-second timeout. Exact draft/reveal/rating retries do not duplicate saves after
+a lost acknowledgement. A reload action recovers from conflicting tab versions,
+with confirmation before discarding a local unsaved draft.
+
+History retains all session summaries and prioritises an active session. The
+personal database is separate from the browser-test database. Desktop/mobile
+browser tests exercise accepted-answer alternatives, multiple-correct selections,
+read progress, reload/resume, pause/resume, historical answers, legacy migration,
+progress backup round-trips and failed-save recovery. Card content is versioned;
+this initial implementation does not version entire explanatory articles.
+
+## Verification completed
+
+- 25 domain, content, answer-validation, repository and HTTP tests pass.
+- Five desktop/mobile browser flows pass against PostgreSQL 17 in the isolated
+  `recall_e2e` database; production TypeScript checking and Vite build pass.
+- Repeat seeding preserves the original 87 concepts / 438 cards.
+- A paused test session and written response survive a real PostgreSQL restart
+  with identical order, status, revision snapshots and timestamps.
+- The documented `pg_dump` command produced a custom-format archive whose table
+  of contents was readable with `pg_restore -l`; a full restore was not exercised.
+- The personal app proxy returns 11 fields, 87 concepts and 438 cards, while the
+  browser fixtures and restart probe remain isolated from personal progress.
+- The earlier layout-transition finding is already resolved: progress indicators
+  animate `transform` rather than width. No design suppressions were added.

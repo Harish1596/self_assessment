@@ -67,7 +67,7 @@ export async function getSession(sql: Sql, id: string): Promise<StoredSession> {
 export async function listSessions(sql: Sql): Promise<SessionSummary[]> {
   const rows = (
     await sql.query<any>(
-      `SELECT s.*,count(i.id)::int AS total,count(i.id) FILTER(WHERE i.status='reviewed')::int AS reviewed FROM sessions s LEFT JOIN session_items i ON i.session_id=s.id WHERE s.profile_id='local' GROUP BY s.id ORDER BY s.updated_at DESC LIMIT 100`,
+      `SELECT s.*,count(i.id)::int AS total,count(i.id) FILTER(WHERE i.status='reviewed')::int AS reviewed FROM sessions s LEFT JOIN session_items i ON i.session_id=s.id WHERE s.profile_id='local' GROUP BY s.id ORDER BY (s.status='active') DESC, s.updated_at DESC`,
     )
   ).rows;
   return rows.map((r) => ({ ...header(r), total: r.total, reviewed: r.reviewed }));
@@ -156,6 +156,31 @@ export async function mutateSession(
     // Safe retry after a lost rating acknowledgement: do not count it twice.
     if (input.action === 'rate' && item?.status === 'reviewed' && item.rating === input.rating)
       return session;
+    // Acknowledgements can be lost after a committed save. Accept exact retries,
+    // while still rejecting a stale mutation that would change persisted data.
+    if (session.version === input.version + 1) {
+      if (item && ['answer', 'reveal'].includes(input.action) && input.response !== undefined) {
+        const response = validateResponse(input.response, item.card);
+        const same =
+          response.answerText === item.answerText &&
+          JSON.stringify([...response.selectedChoiceIds].sort()) ===
+            JSON.stringify([...item.selectedChoiceIds].sort());
+        if (
+          same &&
+          ((input.action === 'answer' && item.status === 'pending') ||
+            (input.action === 'reveal' && item.status === 'revealed'))
+        )
+          return session;
+      }
+      if (input.action === 'reveal' && input.response === undefined && item?.status === 'revealed')
+        return session;
+      if (
+        (input.action === 'pause' && session.status === 'paused') ||
+        (input.action === 'resume' && session.status === 'active') ||
+        (input.action === 'abandon' && session.status === 'abandoned')
+      )
+        return session;
+    }
     if (session.version !== input.version)
       throw new ConflictError('This session changed. Reload it before saving again.');
     if (['completed', 'abandoned'].includes(session.status))
@@ -229,6 +254,7 @@ export async function mutateSession(
 export async function markRead(db: Database, id: string, read: unknown): Promise<Progress> {
   if (typeof read !== 'boolean') throw new ValidationError('Read status must be true or false.');
   return db.transaction(async (sql) => {
+    await sql.query("SELECT id FROM profiles WHERE id='local' FOR UPDATE");
     if (!(await sql.query('SELECT id FROM concepts WHERE id=$1', [id])).rows.length)
       throw new NotFoundError('Concept not found.');
     if (read)

@@ -85,7 +85,7 @@ function RecallApp({ initial, migrationError }: { initial: Bootstrap; migrationE
   draftRef.current = draft;
   const sessionRef = useRef(session);
   sessionRef.current = session;
-  const lock = useRef(false);
+  const operations = useRef<Promise<void>>(Promise.resolve());
   const importInput = useRef<HTMLInputElement>(null);
   const main = useRef<HTMLElement>(null);
   async function refresh() {
@@ -93,19 +93,35 @@ function RecallApp({ initial, migrationError }: { initial: Bootstrap; migrationE
     setProgress(data.progress);
     setHistory(data.sessions);
   }
+  function reloadSession() {
+    if (
+      pending &&
+      !window.confirm(
+        'Reload the latest saved session? This replaces the unsaved answer on this page. Copy it first if you want to keep it.',
+      )
+    )
+      return;
+    void perform(async () => {
+      if (sessionRef.current) accept(await api.session(sessionRef.current.id));
+      setDraft(null);
+      setDraftError('');
+      await refresh();
+    });
+  }
   async function perform(run: () => Promise<void>) {
-    if (lock.current) return;
-    lock.current = true;
     setBusy(true);
-    try {
-      await run();
-      setStorageError('');
-    } catch (e) {
-      setStorageError((e as Error).message);
-    } finally {
-      lock.current = false;
-      setBusy(false);
-    }
+    // Serialize writes, including imports initiated while a previous save is finishing.
+    const operation = operations.current.then(async () => {
+      try {
+        await run();
+        setStorageError('');
+      } catch (e) {
+        setStorageError((e as Error).message);
+      }
+    });
+    operations.current = operation;
+    await operation;
+    if (operations.current === operation) setBusy(false);
   }
   function accept(next: StoredSession) {
     sessionRef.current = next;
@@ -387,6 +403,9 @@ function RecallApp({ initial, migrationError }: { initial: Bootstrap; migrationE
         {storageError && (
           <div className="banner warning-banner" role="alert">
             {storageError}
+            <button disabled={busy} className="text-button" onClick={reloadSession}>
+              Reload saved state
+            </button>
             <button className="text-button" onClick={exportProgress}>
               Export backup
               <Download size={15} />

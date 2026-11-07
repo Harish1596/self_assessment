@@ -73,7 +73,8 @@ Ratings save immediately. Written drafts save after a short pause in typing;
 reveal also saves the current response before displaying the answer. Wait for
 “Session saved” before closing the browser. Unsaved drafts trigger the browser's
 leave warning where supported. On a save failure, the typed response remains
-available with a retry action. Navigating to the library preserves the draft.
+available with a retry action. Exact retries after a lost save acknowledgement
+are safe; conflicting edits from another tab require reloading saved state. Navigating to the library preserves the draft.
 Answers lock after reveal. Completed and ended sessions stay in history, with
 snapshots of their original cards even if the library changes later.
 

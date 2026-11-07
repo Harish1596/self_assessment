@@ -129,6 +129,51 @@ describe('PostgreSQL library and sessions', () => {
     );
     expect((await listSessions(db))[0].reviewed).toBe(1);
   });
+  it('accepts exact draft/reveal retries after a lost acknowledgement', async () => {
+    let s = await createSession(db, config);
+    const itemId = s.items[0].id;
+    const response = {
+      answerText: 'Saved before connection dropped',
+      selectedChoiceIds: ['a', 'b'],
+    };
+    const draftVersion = s.version;
+    s = await mutateSession(db, s.id, {
+      version: draftVersion,
+      action: 'answer',
+      itemId,
+      response,
+    });
+    expect(
+      (await mutateSession(db, s.id, { version: draftVersion, action: 'answer', itemId, response }))
+        .version,
+    ).toBe(s.version);
+    await expect(
+      mutateSession(db, s.id, {
+        version: draftVersion,
+        action: 'answer',
+        itemId,
+        response: { ...response, answerText: 'Stale edit' },
+      }),
+    ).rejects.toThrow(/changed/);
+    const revealVersion = s.version;
+    s = await mutateSession(db, s.id, {
+      version: revealVersion,
+      action: 'reveal',
+      itemId,
+      response,
+    });
+    expect(
+      (
+        await mutateSession(db, s.id, {
+          version: revealVersion,
+          action: 'reveal',
+          itemId,
+          response,
+        })
+      ).version,
+    ).toBe(s.version);
+    await mutateSession(db, s.id, { version: s.version, action: 'abandon' });
+  });
   it('pauses, resumes and abandons with responses preserved', async () => {
     let s = await createSession(db, config);
     s = await mutateSession(db, s.id, { version: s.version, action: 'pause' });
@@ -153,7 +198,7 @@ describe('PostgreSQL library and sessions', () => {
     expect(await getProgress(db)).toEqual(before);
     await expect(importProgress(db, { ...progress, read: ['missing'] })).rejects.toThrow();
     expect(await getProgress(db)).toEqual(before);
-    expect((await listSessions(db)).length).toBe(2);
+    expect((await listSessions(db)).length).toBe(3);
   });
   it('serves HTTP data and rejects cross-origin or malformed writes', async () => {
     const server = createApi(db);

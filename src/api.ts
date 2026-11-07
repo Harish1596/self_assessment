@@ -5,6 +5,7 @@ export async function request<T>(path: string, method = 'GET', body?: unknown): 
   try {
     response = await fetch(`/api${path}`, {
       method,
+      signal: AbortSignal.timeout(15000),
       headers: body === undefined ? {} : { 'Content-Type': 'application/json' },
       body: body === undefined ? undefined : JSON.stringify(body),
     });

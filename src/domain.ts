@@ -27,7 +27,12 @@ export function buildSession(
   const { cards, fields } = catalogue;
   if (!['single', 'multiple', 'random'].includes(config.mode))
     throw new Error('Choose a valid selection mode.');
-  if (!Array.isArray(config.fields) || typeof config.weakOnly !== 'boolean')
+  if (
+    !Array.isArray(config.fields) ||
+    config.fields.length > 10000 ||
+    !config.fields.every((field) => typeof field === 'string') ||
+    typeof config.weakOnly !== 'boolean'
+  )
     throw new Error('Invalid session options.');
   if (!Number.isInteger(config.count) || config.count < 1 || config.count > 10000)
     throw new Error('Choose at least one question.');
@@ -135,15 +140,3 @@ export function parseProgress(
 }
 
 export const STORAGE_KEY = 'recall-progress-v1';
-export function loadProgress(): { progress: Progress; error: string } {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return { progress: raw ? parseProgress(raw) : emptyProgress(), error: '' };
-  } catch {
-    return {
-      progress: emptyProgress(),
-      error:
-        'Saved progress could not be loaded. Export this session before leaving; existing browser data has not been overwritten.',
-    };
-  }
-}
