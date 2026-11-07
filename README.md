@@ -35,7 +35,9 @@ update `DATABASE_URL` to match. For an API port change, set `RECALL_API_TARGET`
 when running Vite (for example `http://127.0.0.1:3005`).
 
 `db:seed` applies versioned migrations and imports the bundled foundation content
-once. Repeating it does not reset progress or overwrite existing seeded content.
+whenever the seed bundle changes. Unchanged bundles are skipped. Changed cards
+receive new revisions; saved session answers and progress are preserved. Omitted
+records are retained, and returning to an older seed bundle reapplies that bundle.
 The API also applies pending migrations at startup.
 
 ### Stop the app

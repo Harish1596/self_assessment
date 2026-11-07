@@ -110,13 +110,24 @@ export function validateCatalogue(value: unknown): CatalogueInput {
 export async function importCatalogue(
   db: Database,
   value: unknown,
-  seedId?: string,
+  seed?: string | { id: string; fingerprint: string },
 ): Promise<void> {
   const input = validateCatalogue(value);
   await db.transaction(async (sql) => {
     await sql.query("SELECT pg_advisory_xact_lock(hashtext('recall-catalogue-import'))");
-    if (seedId && (await sql.query('SELECT id FROM seed_runs WHERE id=$1', [seedId])).rows.length)
+    if (
+      typeof seed === 'string' &&
+      (await sql.query('SELECT id FROM seed_runs WHERE id=$1', [seed])).rows.length
+    )
       return;
+    if (seed && typeof seed !== 'string') {
+      const previous = (
+        await sql.query<{ fingerprint: string }>('SELECT fingerprint FROM seed_state WHERE id=$1', [
+          seed.id,
+        ])
+      ).rows[0];
+      if (previous?.fingerprint === seed.fingerprint) return;
+    }
     for (const [i, f] of input.fields.entries())
       await sql.query(
         'INSERT INTO fields(id,name,description,color,sort_order) VALUES($1,$2,$3,$4,$5) ON CONFLICT(id) DO UPDATE SET name=$2,description=$3,color=$4,sort_order=$5',
@@ -176,6 +187,18 @@ export async function importCatalogue(
       );
       await sql.query('UPDATE cards SET current_revision_id=$2 WHERE id=$1', [c.id, revisionId]);
     }
-    if (seedId) await sql.query('INSERT INTO seed_runs(id) VALUES($1)', [seedId]);
+    if (typeof seed === 'string') await sql.query('INSERT INTO seed_runs(id) VALUES($1)', [seed]);
+    else if (seed)
+      await sql.query(
+        'INSERT INTO seed_state(id,fingerprint) VALUES($1,$2) ON CONFLICT(id) DO UPDATE SET fingerprint=$2,updated_at=now()',
+        [seed.id, seed.fingerprint],
+      );
   });
+}
+
+/** Synchronise changed bundles without resetting progress or reapplying unchanged seeds. */
+export async function syncSeedCatalogue(db: Database, value: unknown): Promise<void> {
+  const input = validateCatalogue(value);
+  const fingerprint = createHash('sha256').update(JSON.stringify(input)).digest('hex');
+  await importCatalogue(db, input, { id: 'cs-foundations', fingerprint });
 }

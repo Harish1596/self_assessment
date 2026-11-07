@@ -16,7 +16,8 @@ and access control first.
 - Shared contracts define fields, concepts, cards, session state and responses.
 - API handlers validate requests and call a service/repository layer.
 - PostgreSQL migrations own schema changes; explicit idempotent seeding imports
-  the current catalogue and does not overwrite content on every server restart.
+  changed seed bundles without resetting progress. A seed fingerprint prevents
+  unchanged bundles from being reapplied; reverting a bundle also synchronises it.
 - A catalogue import endpoint accepts structured content with stable IDs, allowing
   Markdown processing to be added independently later. This task does not invent
   the final Markdown parser or generate more learning material.
