@@ -1,0 +1,20 @@
+name: recall
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: recall
+      POSTGRES_DB: recall
+      POSTGRES_PASSWORD: ${RECALL_DB_PASSWORD:-recall_local}
+    ports:
+      - '127.0.0.1:${RECALL_DB_PORT:-54329}:5432'
+    volumes:
+      - recall_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U recall -d recall']
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    restart: unless-stopped
+volumes:
+  recall_postgres:
