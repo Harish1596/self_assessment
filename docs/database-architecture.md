@@ -7,7 +7,8 @@ session answers/status. PostgreSQL is the database. Multiple acceptable
 written answers and single-/multiple-correct selectable choices are independent
 of database choice; the model supports both. Existing content and card IDs must
 remain stable. This remains a personal, local application without public hosting
-or accounts. The API binds to loopback; deploying it publicly requires identity
+or accounts. Host ports bind to loopback (the API listens on the container network
+inside Docker); deploying it publicly requires identity
 and access control first.
 
 ## Boundaries
@@ -102,7 +103,8 @@ this initial implementation does not version entire explanatory articles.
 
 ## Verification completed
 
-- 25 domain, content, answer-validation, repository and HTTP tests pass.
+- 27 domain, content, answer-validation, seed synchronisation, repository, HTTP
+  and static-serving tests pass.
 - Five desktop/mobile browser flows pass against PostgreSQL 17 in the isolated
   `recall_e2e` database; production TypeScript checking and Vite build pass.
 - Repeat seeding preserves the original 87 concepts / 438 cards.
@@ -114,3 +116,41 @@ this initial implementation does not version entire explanatory articles.
   browser fixtures and restart probe remain isolated from personal progress.
 - The earlier layout-transition finding is already resolved: progress indicators
   animate `transform` rather than width. No design suppressions were added.
+
+## Container startup
+
+`./start.sh` builds the multi-stage Node.js image and starts the Compose `app`
+and `db` services, waiting for health checks. The app starts only after PostgreSQL
+is healthy. Its entrypoint applies migrations and synchronises seed content
+before starting the HTTP server. The runtime image runs as the unprivileged
+`node` user and installs only production dependencies, including `tsx`.
+
+The API serves built assets from `RECALL_STATIC_DIR` in the container. The browser
+and API share one loopback-published port, configured by `RECALL_WEB_PORT`.
+`RECALL_API_HOST=0.0.0.0` is used only inside the container. Database credentials
+are passed as server-only `PG*` variables; a host `DATABASE_URL` is not copied into
+the image. The named PostgreSQL volume remains mounted across image rebuilds.
+Changes to app/content source are picked up by rebuilding, without bind mounts.
+
+Seed fingerprints are tracked in `seed_state`. Changed or reverted bundles merge
+transactionally, appending card revisions while retaining old sessions, answers,
+read progress and omitted catalogue records. An unchanged fingerprint skips the
+import. The original `seed_runs` tracking remains compatible with older tooling.
+
+The script supports start, stop, status and logs, reports failed health checks
+with bounded app logs, and preserves existing configuration and database volumes.
+It moves a conflicting browser port to a free nearby port; database port conflicts
+are left explicit to avoid silently changing host connection settings. Advanced
+validation can isolate the stack with `COMPOSE_PROJECT_NAME`, `RECALL_DB_PORT`,
+`RECALL_WEB_PORT` and a separate `RECALL_ENV_FILE`.
+
+Container startup was verified with a separate Docker project and database volume:
+fresh build/start, repeat start, automatic occupied-port selection, status and stop.
+A temporary changed seed bundle was rebuilt into the app image; the saved response,
+old card revision and rating remained identical while the current card received
+one new revision. Repeat startup did not add another revision. Chrome loaded the
+built library and historical answer without page errors. The runtime runs as UID
+1000 and excludes `.env` and development-only database-test packages. The test stack
+was stopped and its database volume retained. The existing host database URL failed
+authentication during the first browser-suite attempt; the five flows passed with
+an explicit URL to the isolated test database. The user's `.env` was not modified.

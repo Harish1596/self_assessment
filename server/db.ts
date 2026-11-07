@@ -14,7 +14,7 @@ export type Database = Sql & {
   close(): Promise<void>;
 };
 
-export function connectDatabase(connectionString: string): Database {
+export function connectDatabase(connectionString?: string): Database {
   // Keep the driver behind one small boundary; repositories consume parameterised SQL.
   const require = createRequire(import.meta.url);
   const { Pool: PgPool } = require('pg') as {
@@ -39,6 +39,14 @@ export function connectDatabase(connectionString: string): Database {
     },
     close: () => pool.end(),
   };
+}
+
+/** PG* variables are used inside Compose; host development retains its existing URL. */
+export function connectConfiguredDatabase(): Database {
+  return connectDatabase(
+    process.env.DATABASE_URL ||
+      (process.env.PGHOST ? undefined : 'postgresql://recall:recall_local@127.0.0.1:54329/recall'),
+  );
 }
 
 export async function migrate(database: Database): Promise<void> {

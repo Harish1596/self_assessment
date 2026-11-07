@@ -2,9 +2,51 @@
 
 ## Run locally
 
-Use Node.js 22.19+ and Docker Desktop. Start Docker before the database commands.
+Install Docker Desktop (or Docker Engine with Compose v2). No host Node.js or
+npm installation is needed for the normal startup flow. From the project folder:
 
-### First-time setup
+```sh
+./start.sh
+```
+
+The script creates `.env` from `.env.example` if missing, builds the app image,
+starts PostgreSQL with its persistent volume mounted, waits for the database,
+applies migrations and synchronises changed seed content. It waits until the app
+is healthy, prints the browser URL and exits; containers keep running in the
+background. On macOS it opens Docker Desktop if needed.
+
+Run the same command after changing app code, dependencies or seed files. Docker
+rebuilds changed layers and recreates affected containers. Existing session
+answers, ratings and read progress are retained. Unchanged seed bundles are
+skipped; changed cards receive new revisions and omitted records are retained.
+Returning to an older seed bundle also synchronises that bundle.
+
+The default browser URL is http://127.0.0.1:5173. If another process owns the
+browser port, the script selects a nearby free port, saves it in `.env` and
+prints the actual URL. App and API share this origin. PostgreSQL uses host port
+54329; an unrelated conflict on that database port is reported by Docker rather
+than changing database settings automatically. Existing `.env` values are kept.
+Do not change `RECALL_DB_PASSWORD` for an existing volume without also updating
+the database user's password.
+
+```sh
+./start.sh --status   # Container status and actual browser URL
+./start.sh --logs     # Follow logs; Ctrl+C stops following only
+./start.sh --stop     # Stop app and database, retaining the database volume
+./start.sh --help
+```
+
+Docker stores data in the `recall_recall_postgres` named volume. Stopping or
+rebuilding containers preserves it; deleting the volume removes the database.
+Source files and built browser assets are copied into the app image, so rerun
+`./start.sh` to apply edits. No source bind mount or development watcher is used.
+
+### Optional host development
+
+For live development instead of the containerised app, use Node.js 22.19+ and
+Docker Desktop. Stop the containerised app first with `./start.sh --stop`.
+
+#### First-time setup
 
 ```sh
 npm ci
@@ -13,7 +55,7 @@ npm run db:start
 npm run db:seed
 ```
 
-### Start the app
+#### Start the development servers
 
 Start the database and API in one terminal:
 
@@ -34,13 +76,11 @@ are in `.env`, which Git ignores. If you change the database port or password,
 update `DATABASE_URL` to match. For an API port change, set `RECALL_API_TARGET`
 when running Vite (for example `http://127.0.0.1:3005`).
 
-`db:seed` applies versioned migrations and imports the bundled foundation content
-whenever the seed bundle changes. Unchanged bundles are skipped. Changed cards
-receive new revisions; saved session answers and progress are preserved. Omitted
-records are retained, and returning to an older seed bundle reapplies that bundle.
+`db:seed` applies migrations and synchronises changed seed bundles using the same
+rules as container startup. Run it after editing seed files during host development.
 The API also applies pending migrations at startup.
 
-### Stop the app
+#### Stop the development servers
 
 Press Ctrl+C in each terminal to stop the web app and API. Stop the database with:
 
@@ -48,10 +88,9 @@ Press Ctrl+C in each terminal to stop the web app and API. Stop the database wit
 docker compose stop db
 ```
 
-Docker stores data in the `recall_recall_postgres` named volume. Stopping the
-service preserves it; deleting the volume removes the database.
-
 ### Build, preview and test
+
+These optional developer commands require Node.js and `npm ci` on the host.
 
 ```sh
 npm test          # Domain, content, validation, PostgreSQL repositories and HTTP
@@ -68,7 +107,7 @@ they reset only that database's assessment progress. The configured PostgreSQL
 user must be able to create this test database. Unit/repository tests use embedded
 PostgreSQL (PGlite), and HTTP tests need permission to bind a loopback port.
 
-The API and database bind to loopback for personal use. Public hosting, accounts
+Published Docker ports and host development servers bind to loopback for personal use. Public hosting, accounts
 and cross-device sync are outside the current scope. A database failure produces
 an error; there is no silent fallback to temporary browser-only saves.
 
@@ -201,7 +240,9 @@ bank. `src/data.ts` holds the API catalogue installed before the app mounts.
 `Flashcards.tsx` provides setup, practice, history and results. `domain.ts` owns
 selection and progress validation; `shared/` defines persistence contracts and
 answer validation. `server/` owns HTTP handlers, transactional repositories,
-seeding and SQL migrations. See [database architecture](docs/database-architecture.md)
+seeding and SQL migrations. `start.sh`, `compose.yaml`, `Dockerfile` and
+`docker/entrypoint.sh` own the container startup flow. The app container serves
+both the API and built browser assets. See [database architecture](docs/database-architecture.md)
 for API and storage boundaries.
 
 The implementation scope is recorded in `docs/design.md` and `docs/plan.md`. The generated visual reference is in `docs/reference/recall-concept.png`.

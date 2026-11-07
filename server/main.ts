@@ -1,12 +1,12 @@
-import { connectDatabase, migrate } from './db';
+import { connectConfiguredDatabase, migrate } from './db';
 import { createApi } from './http';
-const db = connectDatabase(
-  process.env.DATABASE_URL ?? 'postgresql://recall:recall_local@127.0.0.1:54329/recall',
-);
+const db = connectConfiguredDatabase();
 await migrate(db);
 const port = Number(process.env.RECALL_API_PORT ?? 3001);
-const api = createApi(db);
-api.listen(port, '127.0.0.1', () => console.log(`Recall API http://127.0.0.1:${port}`));
+const api = createApi(db, process.env.RECALL_STATIC_DIR);
+api.listen(port, process.env.RECALL_API_HOST ?? '127.0.0.1', () =>
+  console.log(`Recall API http://127.0.0.1:${port}`),
+);
 for (const signal of ['SIGINT', 'SIGTERM'])
   process.on(signal, () => {
     api.close(() => {

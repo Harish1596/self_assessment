@@ -1,9 +1,7 @@
 import { cards, concepts, fields } from '../src/seed-data';
-import { connectDatabase, migrate } from './db';
+import { connectConfiguredDatabase, migrate } from './db';
 import { syncSeedCatalogue } from './catalogue';
-const db = connectDatabase(
-  process.env.DATABASE_URL ?? 'postgresql://recall:recall_local@127.0.0.1:54329/recall',
-);
+const db = connectConfiguredDatabase();
 try {
   await migrate(db);
   await syncSeedCatalogue(db, {

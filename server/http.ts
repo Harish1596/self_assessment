@@ -1,3 +1,4 @@
+import { serveStatic } from './static';
 import { createServer } from 'node:http';
 import type { Database } from './db';
 import { getCatalogue, importCatalogue } from './catalogue';
@@ -14,7 +15,7 @@ import {
 } from './sessions';
 import { ValidationError } from '../shared/validation';
 
-export function createApi(db: Database) {
+export function createApi(db: Database, staticDirectory?: string) {
   return createServer(async (req, res) => {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.setHeader('Cache-Control', 'no-store');
@@ -34,6 +35,11 @@ export function createApi(db: Database) {
       ) {
         res.statusCode = 403;
         res.end(JSON.stringify({ error: 'Origin not allowed.' }));
+        return;
+      }
+      const pathname = new URL(req.url ?? '/', 'http://localhost').pathname;
+      if (staticDirectory && !pathname.startsWith('/api/') && pathname !== '/api') {
+        await serveStatic(req, res, staticDirectory);
         return;
       }
       let body: any = {};
