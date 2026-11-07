@@ -35,7 +35,7 @@ const icons = {
   databases: Database,
 };
 export function FieldIcon({ field, size = 20 }: { field: FieldId; size?: number }) {
-  const Icon = icons[field];
+  const Icon = icons[field as keyof typeof icons] ?? BookOpen;
   return <Icon size={size} strokeWidth={1.7} aria-hidden="true" />;
 }
 

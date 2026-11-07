@@ -18,8 +18,14 @@ export function buildSession(
   config: SessionConfig,
   progress: Progress,
   random = Math.random,
+  catalogue = { cards, concepts, fields },
 ): { cards: Card[]; fields: FieldId[] } {
-  if (!Number.isInteger(config.count) || config.count < 1)
+  const { cards, fields } = catalogue;
+  if (!['single', 'multiple', 'random'].includes(config.mode))
+    throw new Error('Choose a valid selection mode.');
+  if (!Array.isArray(config.fields) || typeof config.weakOnly !== 'boolean')
+    throw new Error('Invalid session options.');
+  if (!Number.isInteger(config.count) || config.count < 1 || config.count > 10000)
     throw new Error('Choose at least one question.');
   const knownFields = fields.map((f) => f.id);
   const selected = [...new Set(config.fields)];
@@ -74,7 +80,8 @@ export function buildSession(
   };
 }
 
-export function parseProgress(raw: string): Progress {
+export function parseProgress(raw: string, catalogue = { cards, concepts }): Progress {
+  const { cards, concepts } = catalogue;
   const fail = (): never => {
     throw new Error(
       'This is not a valid Recall progress backup. Your current progress has not changed.',

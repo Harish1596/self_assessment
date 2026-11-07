@@ -59,8 +59,23 @@ written recall remains explicitly self-assessed.
 4. Verify full-stack persistence, answer alternatives/choices, restart/resume,
    invalid requests and old progress compatibility; update docs and commit fixes.
 
-Current environment: PostgreSQL is not listening locally and Docker's daemon is
-not running. Dependency downloads and escalated actions are presently blocked by
-an invalidated approval-service sign-in token. Continue preparing and checking
-local changes; do not bypass that approval failure or claim database integration
-was exercised without a running database.
+## Backend tooling
+
+Run `npm run db:start`, then `npm run db:seed` to migrate and explicitly import
+87 concepts and 438 existing cards. Seeding is idempotent and does not reset
+progress. `npm run dev:api` runs the API on `127.0.0.1:3001`. Optional `.env`
+settings are documented in `.env.example`; database credentials are server-only.
+
+The API provides `GET /api/bootstrap`, `GET /api/sessions/:id`,
+`POST /api/sessions`, `PATCH /api/sessions/:id`, `PUT /api/read/:id`,
+`POST /api/progress/import` and `POST /api/catalogue`. Catalogue imports merge
+stable IDs and append changed card revisions; omitted records remain available.
+Request validation happens before content writes; imports and session changes
+run in database transactions. Progress imports replace latest read/rating state
+without deleting historical sessions. Legacy imports merge once per content hash.
+
+`npm test` exercises the migration and repositories against embedded PostgreSQL
+(PGlite), including revision immutability, draft persistence, exact-set choice
+grading, optimistic concurrency, idempotent ratings, lifecycle transitions and
+legacy imports. HTTP tests bind a temporary loopback port. PostgreSQL 17 Docker
+migration and repeat seeding were also exercised successfully.

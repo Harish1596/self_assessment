@@ -1,15 +1,4 @@
-export type FieldId =
-  | 'computing'
-  | 'logic'
-  | 'programming'
-  | 'engineering'
-  | 'security'
-  | 'representation'
-  | 'structures'
-  | 'algorithms'
-  | 'systems'
-  | 'networking'
-  | 'databases';
+export type FieldId = string;
 export type Rating = 'practice' | 'partial' | 'confident';
 export type Source = { title: string; url: string };
 export type Concept = {

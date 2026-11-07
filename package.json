@@ -9,22 +9,30 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "dev:api": "node --env-file-if-exists=.env --import tsx --watch server/main.ts",
+    "db:seed": "node --env-file-if-exists=.env --import tsx server/seed.ts",
+    "db:start": "docker compose up -d db",
+    "start:api": "node --env-file-if-exists=.env --import tsx server/main.ts"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",
     "@fontsource/libre-caslon-display": "^5.3.0",
     "lucide-react": "^0.468.0",
+    "pg": "^8.23.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.15",
     "@playwright/test": "^1.56.0",
     "@types/node": "^22.0.0",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.4.0",
     "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
     "typescript": "~5.7.3",
     "vite": "^6.1.0",
     "vitest": "^5.1.0"
